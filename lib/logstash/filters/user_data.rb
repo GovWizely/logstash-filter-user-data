@@ -7,17 +7,19 @@ require "json"
 class LogStash::Filters::UserData < LogStash::Filters::Base
 
   config_name "user_data"
+
+  config :user_entries, :validate => :array, :default => []
   
   public
   def register
-    @user_entries = get_user_entries
+    @user_entries = get_user_entries if @user_entries.empty?
   end
 
   public
   def filter(event)
-
-    if event.has_key?('api_key')
-      event.merge!(@user_entries.find { |user| user["api_key"] == event['api_key'] }
+    if event.to_hash.has_key?('api_key')
+      new_info = @user_entries.find { |user| user["api_key"] == event['api_key'] }
+      event.to_hash.merge!(new_info)
     end
 
     filter_matched(event)
