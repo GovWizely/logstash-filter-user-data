@@ -19,7 +19,7 @@ class LogStash::Filters::UserData < LogStash::Filters::Base
   def filter(event)
     if event.to_hash.has_key?('api_key')
       new_info = @user_entries.find { |user| user["api_key"] == event['api_key'] }
-      event.to_hash.merge!(new_info)
+      event.to_hash.merge!(new_info) if new_info
     end
 
     filter_matched(event)
