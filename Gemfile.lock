@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    logstash-filter-user-data (2.0.1)
+    logstash-filter-user-data (1.0.0)
       logstash-core (>= 1.4.0, < 2.0.0)
 
 GEM
