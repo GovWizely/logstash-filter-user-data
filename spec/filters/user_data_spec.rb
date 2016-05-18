@@ -11,7 +11,7 @@ describe LogStash::Filters::UserData do
       'email' => 'foo@bar.com',
       'created_at' => '2015-04-01T19:17:00+00:00'
     }]
-    @filter = LogStash::Filters::UserData.new({"user_entries" => @user_entries})
+    @filter = LogStash::Filters::UserData.new({"user_entries" => @user_entries, "index_name" => "not_a_real_index"})
   end
 
   describe '#filter' do

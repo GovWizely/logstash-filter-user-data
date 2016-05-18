@@ -9,6 +9,7 @@ class LogStash::Filters::UserData < LogStash::Filters::Base
   config_name "user_data"
 
   config :user_entries, :validate => :array, :default => []
+  config :index_name, :validate => :string, :required => true
   
   public
   def register
@@ -27,7 +28,7 @@ class LogStash::Filters::UserData < LogStash::Filters::Base
 
   def get_user_entries
     user_count = get_users_count
-    user_response = open("http://localhost:9200/production:webservices:users/_search?size=#{user_count}&q=*:*").read
+    user_response = open("http://localhost:9200/#{index_name}/_search?size=#{user_count}&q=*:*").read
     user_response_hashes = JSON.parse(user_response)
     user_info_keys = ["api_key", "full_name", "email", "company", "created_at"]
     user_response_hashes["hits"]["hits"].map do |entry|
@@ -36,7 +37,7 @@ class LogStash::Filters::UserData < LogStash::Filters::Base
   end
 
   def get_users_count
-    user_count_response = open("http://localhost:9200/production:webservices:users/_count?q=*:*").read
+    user_count_response = open("http://localhost:9200/#{index_name}/_count?q=*:*").read
     JSON.parse(user_count_response)["count"]
   end
 end
