@@ -10,7 +10,7 @@ class LogStash::Filters::UserData < LogStash::Filters::Base
 
   config :user_entries, :validate => :array, :default => []
   config :index_name, :validate => :string, :required => true
-  
+
   public
   def register
     @user_entries = get_user_entries if @user_entries.empty?
@@ -18,11 +18,15 @@ class LogStash::Filters::UserData < LogStash::Filters::Base
 
   public
   def filter(event)
-    if event.to_hash.has_key?('api_key')
-      new_info = @user_entries.find { |user| user["api_key"] == event['api_key'] }
-      event.to_hash.merge!(new_info) if new_info
+    if event.get('api_key')
+      new_info = @user_entries.find { |user| user["api_key"] == event.get('api_key') }
+      if new_info
+        event.set("full_name", new_info["full_name"])
+        event.set("email", new_info["email"])
+        event.set("company", new_info["company"])
+        event.set("created_at", new_info["created_at"])
+      end
     end
-
     filter_matched(event)
   end
 
