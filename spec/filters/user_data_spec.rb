@@ -1,9 +1,10 @@
+# encoding: utf-8
 require 'spec_helper'
 require "logstash/filters/user_data"
 
 describe LogStash::Filters::UserData do
 
-   before do 
+  before do 
     @user_entries = [{
       'api_key' => 'notarealkey',
       'full_name' => 'Foo Bar',
@@ -19,7 +20,11 @@ describe LogStash::Filters::UserData do
       test_event = {'api_key' => 'notarealkey'}
       expected_event = @user_entries[0]
       expect(@filter).to receive(:filter_matched) do |processed_event|
-        expect(processed_event.to_hash).to include(expected_event)
+        expect(processed_event.get('api_key')).to eq(expected_event['api_key'])
+        expect(processed_event.get('full_name')).to eq(expected_event['full_name'])
+        expect(processed_event.get('company')).to eq(expected_event['company'])
+        expect(processed_event.get('email')).to eq(expected_event['email'])
+        expect(processed_event.get('created_at')).to eq(expected_event['created_at'])
       end
       @filter.filter(LogStash::Event.new(test_event))
     end
@@ -36,7 +41,6 @@ describe LogStash::Filters::UserData do
       allow(@filter).to receive_message_chain(:open, :read) { test_response }
       allow(@filter).to receive(:get_users_count) { '1' }
       expect(@filter.get_user_entries).to match_array(@user_entries)
-
     end
   end
 
